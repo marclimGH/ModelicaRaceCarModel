@@ -1,6 +1,7 @@
 package RaceCarLibrary
 import SI = Modelica.Units.SI;
 
+
    package DriversP
   partial class DriverInputs
       Real throttle(start = 0, min = 0, max = 1) "Throttle 0 to 1";
@@ -21,13 +22,13 @@ import SI = Modelica.Units.SI;
   package VehicleDynamicsP
     partial class baseLongitudinalDynamics
       parameter Modelica.Units.SI.Mass carMass = 800 "car mass in kg";
-      Modelica.Units.SI.Force Fx "Net Longitudinal Force";
-      Modelica.Units.SI.Force Ftraction "Traction Force";
-      Modelica.Units.SI.Force Fbrake "Brake Force";
-      Modelica.Units.SI.Force Fdrag "Drag Force";
+      outer Modelica.Units.SI.Force Fx "Net Longitudinal Force";
+      outer Modelica.Units.SI.Force Ftraction "Traction Force";
+      outer Modelica.Units.SI.Force Fbrake "Brake Force";
+      outer Modelica.Units.SI.Force Fdrag "Drag Force";
       //  Modelica.Units.SI.Force Fslope "Slope Related Force (positive in the forward direction)";
-      Modelica.Units.SI.Acceleration Ax "Longitudinal Acceleration";
-      Modelica.Units.SI.Velocity Vx "Longitudinal Velocity";
+      outer Modelica.Units.SI.Acceleration Ax "Longitudinal Acceleration";
+      outer Modelica.Units.SI.Velocity Vx "Longitudinal Velocity";
  
     equation
       Fx = Ftraction - Fbrake - Fdrag;
@@ -47,9 +48,9 @@ import SI = Modelica.Units.SI;
 
   package AeroDynamicsP
     partial class baseAerodynamics
-      Modelica.Units.SI.Force Faerodrag "Aeroudynamical Drag force";
-      Modelica.Units.SI.Force Faerolift "Aeroudynamical Lift force";
-      Modelica.Units.SI.Velocity Vx "Longitudinal Velocity";
+      outer Modelica.Units.SI.Force Fdrag "Aeroudynamical Drag force";
+    //  outer Modelica.Units.SI.Force Flift "Aeroudynamical Lift force";
+      outer Modelica.Units.SI.Velocity Vx "Longitudinal Velocity";
     equation
 
     end baseAerodynamics;
@@ -58,8 +59,8 @@ import SI = Modelica.Units.SI;
      extends RaceCarLibrary.AeroDynamicsP.baseAerodynamics;
      parameter Real Cdrag(unit="kg/m")  "lumped drag coefficient (kg/m)";
     equation
-     Faerolift = 0;
-     Faerodrag = 0.5*Cdrag*(Vx^2);
+    // Flift = 0;
+     Fdrag = 0.5*Cdrag*(Vx^2);
     end SimpleAeroDynamics;
   end AeroDynamicsP;
 
@@ -79,13 +80,14 @@ import SI = Modelica.Units.SI;
     class baseMainSimulation
       parameter Modelica.Units.SI.Mass carMass "car mass in kg";
       parameter Real Cdrag;
-      Modelica.Units.SI.Force Fx "Net Longitudinal Force";
-      Modelica.Units.SI.Force Ftraction "Traction Force";
-      Modelica.Units.SI.Force Fbrake "Brake Force";
-      Modelica.Units.SI.Force Fdrag "Drag Force";
+      inner Modelica.Units.SI.Force Fx "Net Longitudinal Force";
+      inner Modelica.Units.SI.Force Ftraction "Traction Force";
+      inner Modelica.Units.SI.Force Fbrake "Brake Force";
+      inner Modelica.Units.SI.Force Fdrag "Drag Force";
+    //  inner Modelica.Units.SI.Force Flift "Lift Force";
       //  Modelica.Units.SI.Force Fslope "Slope Related Force (positive in the forward direction)";
-      Modelica.Units.SI.Acceleration Ax(start = 0) "Longitudinal Acceleration";
-      Modelica.Units.SI.Velocity Vx(start = 0)"Longitudinal Velocity";
+      inner Modelica.Units.SI.Acceleration Ax(start = 0) "Longitudinal Acceleration";
+      inner Modelica.Units.SI.Velocity Vx(start = 0)"Longitudinal Velocity";
       
       VehicleDynamicsP.SimpleLongitudinalDynamics LongitudinalDynamics(carMass = carMass)  annotation(
         Placement(transformation(origin = {14, -10}, extent = {{-44, -44}, {44, 44}})));
@@ -94,15 +96,14 @@ import SI = Modelica.Units.SI;
       AeroDynamicsP.SimpleAeroDynamics AeroDynamics(Cdrag = Cdrag)  annotation(
         Placement(transformation(origin = {-40, 62}, extent = {{-10, -10}, {10, 10}})));
     equation
-      Fx  =       LongitudinalDynamics.Fx;
-      Ftraction = LongitudinalDynamics.Ftraction;
-      Fbrake  =   LongitudinalDynamics.Fbrake;
-      Fdrag =     LongitudinalDynamics.Fdrag;
-      Fdrag =     AeroDynamics.Faerodrag;
-      Ax  =       LongitudinalDynamics.Ax;
-      Vx  =       LongitudinalDynamics.Vx;
-      Vx  =       AeroDynamics.Vx;
-      
+    //  Fx  =       LongitudinalDynamics.Fx;
+    //  Ftraction = LongitudinalDynamics.Ftraction;
+    //  Fbrake  =   LongitudinalDynamics.Fbrake;
+    //  Fdrag =     LongitudinalDynamics.Fdrag;
+    //  Fdrag =     AeroDynamics.Faerodrag;
+    //  Ax  =       LongitudinalDynamics.Ax;
+    //  Vx  =       LongitudinalDynamics.Vx;
+    //  Vx  =       AeroDynamics.Vx;
     end baseMainSimulation;
   
     model simpleMainSimulation 
